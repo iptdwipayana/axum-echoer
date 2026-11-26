@@ -1,5 +1,6 @@
 mod error;
 mod handlers;
+mod routers;
 
 const APP_HOST: &str = "0.0.0.0";
 const APP_PORT: &str = "3000";
@@ -16,16 +17,4 @@ async fn main() {
         })
         .await
         .unwrap();
-}
-
-mod routers {
-    use axum::{Router, routing};
-
-    use crate::handlers;
-
-    pub fn init() -> Router {
-        Router::new()
-            .route("/echo", routing::post(handlers::echo))
-            .route("/health", routing::get(handlers::health))
-    }
 }
