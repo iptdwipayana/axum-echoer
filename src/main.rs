@@ -1,4 +1,5 @@
 mod error;
+mod handlers;
 
 const APP_HOST: &str = "0.0.0.0";
 const APP_PORT: &str = "3000";
@@ -26,54 +27,5 @@ mod routers {
         Router::new()
             .route("/echo", routing::post(handlers::echo))
             .route("/health", routing::get(handlers::health))
-    }
-}
-
-mod handlers {
-    use axum::{Json, extract::rejection::JsonRejection, http::StatusCode};
-    use serde::Serialize;
-    use serde_json::Value;
-
-    use crate::error::Error;
-
-    #[derive(Debug, Serialize)]
-    pub struct Response<T> {
-        message: String,
-        data: Option<T>,
-    }
-
-    #[derive(Debug, Serialize)]
-    pub struct EchoResponse {
-        body: Value,
-    }
-
-    #[derive(Debug, Serialize)]
-    pub struct HealthResponse {
-        status: String,
-    }
-
-    pub async fn echo(
-        body: Result<Json<Value>, JsonRejection>,
-    ) -> Result<(StatusCode, Json<Response<EchoResponse>>), Error> {
-        let Json(body) = body?;
-        Ok((
-            StatusCode::OK,
-            Json(Response {
-                message: "success".into(),
-                data: Some(EchoResponse { body }),
-            }),
-        ))
-    }
-
-    pub async fn health() -> (StatusCode, Json<Response<HealthResponse>>) {
-        (
-            StatusCode::OK,
-            Json(Response {
-                message: "healthy".into(),
-                data: Some(HealthResponse {
-                    status: "ok".into(),
-                }),
-            }),
-        )
     }
 }
